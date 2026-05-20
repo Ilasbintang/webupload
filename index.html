@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload File</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-1: #0a1628;
+      --bg-2: #0d2137;
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --gold: #f59e0b;
+      --gold-light: #fcd34d;
+      --glass: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.12);
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg-1);
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+    }
+
+    /* Ambient blobs */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, transparent 70%);
+      top: -150px; left: -150px;
+      pointer-events: none;
+      animation: pulse 6s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      pointer-events: none;
+      animation: pulse 8s ease-in-out infinite reverse;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.7; }
+    }
+
+    .container {
+      position: relative;
+      width: 440px;
+      background: var(--glass);
+      backdrop-filter: blur(24px);
+      border: 1px solid var(--glass-border);
+      padding: 40px 36px;
+      border-radius: 24px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--emerald), var(--gold));
+      color: #0a1628;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .upload-box {
+      border: 2px dashed rgba(16,185,129,0.4);
+      padding: 36px 20px;
+      border-radius: 16px;
+      margin-bottom: 22px;
+      background: rgba(16,185,129,0.04);
+      transition: 0.3s;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .upload-box:hover {
+      border-color: var(--emerald);
+      background: rgba(16,185,129,0.08);
+    }
+
+    .upload-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .upload-box h3 {
+      color: var(--text);
+      font-size: 15px;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .upload-box small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    input[type="file"]::file-selector-button {
+      padding: 6px 14px;
+      border: 1px solid var(--emerald);
+      background: transparent;
+      color: var(--emerald);
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      margin-right: 10px;
+      transition: 0.2s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: var(--emerald);
+      color: #0a1628;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      letter-spacing: 0.02em;
+      font-family: 'DM Sans', sans-serif;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--gold), transparent);
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+    .btn:hover::after { opacity: 0.2; }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(16,185,129,0.35); }
+    .btn:active { transform: translateY(0); }
+
+    .footer-links {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      font-size: 12px;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--emerald); }
+
+    .note {
+      margin-top: 14px;
+      font-size: 11px;
+      color: rgba(148,163,184,0.6);
+      text-align: center;
+    }
+
+    /* ── Live Preview ── */
+    .upload-box {
+      position: relative;
+    }
+
+    /* Preview image inside the box */
+    .preview-img-wrap {
+      display: none;
+      position: relative;
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .preview-img-wrap img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      display: block;
+      border-radius: 10px;
+    }
+
+    /* Remove button on preview */
+    .remove-preview {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: rgba(10,22,40,0.8);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #f87171;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+      backdrop-filter: blur(4px);
+      line-height: 1;
+    }
+
+    .remove-preview:hover {
+      background: rgba(239,68,68,0.3);
+      border-color: #f87171;
+    }
+
+    /* File meta strip */
+    .file-meta {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(16,185,129,0.08);
+      border: 1px solid rgba(16,185,129,0.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 14px;
+      text-align: left;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .file-meta .meta-icon { font-size: 22px; flex-shrink: 0; }
+
+    .file-meta .meta-text { flex: 1; overflow: hidden; }
+    .file-meta .meta-name {
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .file-meta .meta-size {
+      font-size: 11px;
+      color: var(--emerald);
+      margin-top: 2px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity:0; transform:translateY(6px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* When preview active — shrink drop area */
+    .upload-box.has-file {
+      padding: 16px 16px 12px;
+      border-color: rgba(16,185,129,0.6);
+      background: rgba(16,185,129,0.06);
+    }
+
+    .upload-box.has-file .default-content {
+      display: none;
+    }
+
+    .upload-box .default-content { display: block; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="badge">⚡ File Manager</div>
+    <h1>Upload<br>File Anda</h1>
+    <p class="subtitle">Pilih file dari perangkat Anda untuk diunggah ke server</p>
+
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+      <div class="upload-box" id="uploadBox">
+
+        <!-- Default state -->
+        <div class="default-content">
+          <span class="upload-icon">📁</span>
+          <h3>Seret & Lepas atau Pilih File</h3>
+          <small>Semua format didukung · Maks. 500KB</small>
+        </div>
+
+        <!-- Preview image (hidden until file chosen) -->
+        <div class="preview-img-wrap" id="previewWrap">
+          <img id="previewImg" src="" alt="Preview">
+          <button type="button" class="remove-preview" id="removeBtn" title="Hapus pilihan">✕</button>
+        </div>
+
+        <input type="file" name="fileToUpload" id="fileToUpload" accept="*/*" required
+               style="margin-top:10px;">
+      </div>
+
+      <!-- File meta info strip -->
+      <div class="file-meta" id="fileMeta">
+        <span class="meta-icon" id="metaIcon">🖼</span>
+        <div class="meta-text">
+          <div class="meta-name" id="metaName">—</div>
+          <div class="meta-size" id="metaSize">—</div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn" id="submitBtn" disabled style="opacity:0.5;cursor:not-allowed;">
+        ⬆ Upload Sekarang
+      </button>
+    </form>
+
+    <div class="footer-links">
+      <a href="lihat_file.php">🖼 Lihat Gallery</a>
+      <span class="note">Maks. 500KB per file</span>
+    </div>
+  </div>
+
+  <script>
+    const input      = document.getElementById('fileToUpload');
+    const uploadBox  = document.getElementById('uploadBox');
+    const previewWrap= document.getElementById('previewWrap');
+    const previewImg = document.getElementById('previewImg');
+    const removeBtn  = document.getElementById('removeBtn');
+    const fileMeta   = document.getElementById('fileMeta');
+    const metaIcon   = document.getElementById('metaIcon');
+    const metaName   = document.getElementById('metaName');
+    const metaSize   = document.getElementById('metaSize');
+    const submitBtn  = document.getElementById('submitBtn');
+
+    const IMAGE_TYPES = ['image/jpeg','image/png','image/gif','image/webp','image/svg+xml'];
+
+    function formatBytes(b) {
+      if(b < 1024) return b + ' B';
+      if(b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+      return (b/(1024*1024)).toFixed(1) + ' MB';
+    }
+
+    function fileExtIcon(name) {
+      const ext = name.split('.').pop().toLowerCase();
+      const map = { pdf:'📕', txt:'📝', zip:'🗜', mp4:'🎬', docx:'📘', xlsx:'📗',
+                    jpg:'🖼', jpeg:'🖼', png:'🖼', gif:'🖼', webp:'🖼' };
+      return map[ext] || '📄';
+    }
+
+    function showFile(file) {
+      const isImg = IMAGE_TYPES.includes(file.type);
+
+      // Meta strip
+      metaIcon.textContent = fileExtIcon(file.name);
+      metaName.textContent = file.name;
+      const sizeLabel = formatBytes(file.size);
+      const overLimit = file.size > 500000;
+      metaSize.textContent = sizeLabel + (overLimit ? '  ⚠ Melebihi 500KB!' : '');
+      metaSize.style.color  = overLimit ? '#f87171' : 'var(--emerald)';
+      fileMeta.style.display = 'flex';
+
+      // Image preview
+      if(isImg) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          previewImg.src = e.target.result;
+          previewWrap.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        previewWrap.style.display = 'none';
+      }
+
+      uploadBox.classList.add('has-file');
+
+      // Enable/disable submit
+      if(overLimit) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        submitBtn.style.cursor = 'not-allowed';
+      } else {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.style.cursor = 'pointer';
+      }
+    }
+
+    function clearFile() {
+      input.value = '';
+      previewImg.src = '';
+      previewWrap.style.display = 'none';
+      fileMeta.style.display = 'none';
+      uploadBox.classList.remove('has-file');
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+      submitBtn.style.cursor = 'not-allowed';
+    }
+
+    input.addEventListener('change', () => {
+      if(input.files && input.files[0]) showFile(input.files[0]);
+    });
+
+    removeBtn.addEventListener('click', clearFile);
+
+    // Drag & drop
+    uploadBox.addEventListener('dragover', e => {
+      e.preventDefault();
+      uploadBox.style.borderColor = 'var(--emerald)';
+    });
+
+    uploadBox.addEventListener('dragleave', () => {
+      uploadBox.style.borderColor = '';
+    });
+
+    uploadBox.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadBox.style.borderColor = '';
+      if(e.dataTransfer.files[0]) {
+        // Transfer to input
+        const dt = new DataTransfer();
+        dt.items.add(e.dataTransfer.files[0]);
+        input.files = dt.files;
+        showFile(e.dataTransfer.files[0]);
+      }
+    });
+  </script>
+</body>
+</html>
